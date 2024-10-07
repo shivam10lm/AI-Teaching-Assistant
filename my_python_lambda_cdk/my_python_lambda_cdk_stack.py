@@ -61,7 +61,8 @@ class MyPythonLambdaCdkStack(Stack):
         build_project = codebuild.PipelineProject(self, "BuildProject",
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_7_0
-            )
+            ),
+            build_spec=codebuild.BuildSpec.from_source_filename("buildspec.yml")
         )
 
         # CodePipeline build stage

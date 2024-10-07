@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Installing dependencies..."
+      - npm install -g aws-cdk # Install CDK globally
+      - pip install -r requirements.txt # Install Python dependencies
+  pre_build:
+    commands:
+      - echo "Synthesizing the CDK app..."
+      - cdk synth # Synthesize the CloudFormation template
+  build:
+    commands:
+      - echo "Deploying the CDK app..."
+      - cdk deploy --require-approval never # Deploy the CDK stack
+
+artifacts:
+  # No artifacts are generated in this example, adjust if needed
+  files:
+    - "**/*"
