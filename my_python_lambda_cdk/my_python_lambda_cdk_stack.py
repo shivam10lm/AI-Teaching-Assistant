@@ -16,19 +16,31 @@ class MyPythonLambdaCdkStack(Stack):
         super().__init__(scope, id, **kwargs)
 
         # S3 bucket for CodePipeline artifacts
-        bucket = s3.Bucket(self, "MyPipelineBucket")
+        bucket = s3.Bucket(self, "MyPipelineBucket",
+            encryption=s3.BucketEncryption.S3_MANAGED,
+            enforce_ssl=True,
+            versioned=True
+        )
 
-        # Lambda function
+        # Create secrets for API keys
+        groq_api_key = secretsmanager.Secret(self, "GroqApiKey")
+        openai_api_key = secretsmanager.Secret(self, "OpenAiApiKey")
+
+        # Lambda function with updated runtime and secrets
         lambda_function = _lambda.Function(
             self, "MyLambdaFunction",
             runtime=_lambda.Runtime.PYTHON_3_11,
             handler="handler.handler",
             code=_lambda.Code.from_asset("lambda"),
             environment={
-                "GROQ_API_KEY": "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",  # Use SecretsManager for sensitive info
-                "OPENAI_API_KEY": "sk-5KlpEKJhhOBLZVDCvmVnk-Go4Gp4E9nTABtHnR5bjAT3BlbkFJiBwGinjm15TAQMRzo1Hn1IhW2Q2ZG6q-BlO1mLPSwA"
+                "GROQ_API_KEY": groq_api_key.secret_value.unsafe_unwrap(),
+                "OPENAI_API_KEY": openai_api_key.secret_value.unsafe_unwrap()
             }
         )
+
+        # Grant Lambda function permission to read secrets
+        groq_api_key.grant_read(lambda_function)
+        openai_api_key.grant_read(lambda_function)
 
         # Define a CodePipeline source stage
         source_output = codepipeline.Artifact()
