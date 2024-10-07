@@ -1,2 +1,16 @@
 aws-cdk-lib==2.161.1
 constructs>=10.0.0,<11.0.0
+streamlit
+openai-whisper
+langchain
+python-dotenv
+moviepy
+faiss-cpu
+langchain-groq
+langchain_community
+moviepy
+openai
+fastapi
+uvicorn
+pydantic
+requests
